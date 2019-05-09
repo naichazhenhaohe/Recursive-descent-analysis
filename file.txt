@@ -1,0 +1,26 @@
+/*************end of testfile_c**************/
+#include <stdio.h>
+viod main(){
+
+int num1;
+double num2=008;
+double result=1.53e;
+double real=1.52e3;
+double real2=1.52e+31;
+float num3=12.34f;
+char name1[20]="zhangsan";
+char name2[20]="zhangsan;
+char gender1='m;
+char gender2='F';
+scanf("%d ",&num1);
+scanf("%lf ",&num3);
+if(gender!='m'&&a<1||num1>=1)
+result+=num1+num2/num3%gender;
+else
+result=PI*3.14; 
+printf("name=%s,reslut=%.0f",name, result); 
+}
+//wuwuwu
+/********
+*****end of testfilec*****
+*********/

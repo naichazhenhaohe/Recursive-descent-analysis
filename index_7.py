@@ -464,6 +464,59 @@ class Analyzer:
             self.if_Sta()
 
         pprint(self.string[:-1] + " OK!")
+        self.Semantic()
+
+    def Semantic(self):
+        operators = {'+': 0, '-': 0, '*': 1, '/': 1, '%': 1, ')': -1, '(': -1}
+        self.char = []
+        self.symbol = []
+        self.top_char = 0
+        self.top_symbol = 0
+
+        for item in self.token_list[:-1]:
+            if item[1] not in operators and item[1] != ')' and item[1] != '(':
+                self.char.append(item[1])
+                self.top_char += 1
+            elif item[1] in operators.keys() and len(self.symbol) == 0:
+                self.symbol.append(item[1])
+                self.top_symbol += 1
+            elif item[1] == '(':
+                self.symbol.append(item[1])
+                self.top_symbol += 1
+            elif item[1] == ')':
+                while self.symbol[self.top_symbol-1] != '(':
+                    first = self.char.pop()
+                    second = self.char.pop()
+                    pop_symbol = self.symbol.pop()
+                    self.code.append([pop_symbol, second, first, 'T'+str(self.T)])
+                    self.top_symbol -= 1
+                    self.char.append('T'+str(self.T))
+                    self.top_char -= 1
+                    self.T += 1
+                self.symbol.pop()
+                self.top_symbol -= 1
+            elif item[1] in operators.keys() and operators[item[1]] > operators[self.symbol[self.top_symbol - 1]]:
+                self.symbol.append(item[1])
+                self.top_symbol += 1
+            elif item[1] in operators.keys() and operators[item[1]] <= operators[self.symbol[self.top_symbol - 1]]:
+                first = self.char.pop()
+                second = self.char.pop()
+                pop_symbol = self.symbol.pop()
+                self.code.append([pop_symbol, second, first, 'T'+str(self.T)])
+                self.char.append('T'+str(self.T))
+                self.top_char -= 1
+                self.symbol.append(item[1])
+                self.T += 1
+        while len(self.symbol)!= 0:
+            first = self.char.pop()
+            second = self.char.pop()
+            pop_symbol = self.symbol.pop()
+            self.code.append([pop_symbol, second, first, 'T'+str(self.T)])
+            self.top_symbol -= 1
+            self.char.append('T'+str(self.T))
+            self.top_char -= 1
+            self.T += 1
+        pprint(self.code)
 
 terminal = ['+', '-', '*', '/', '%', 'ε', '!', '=', 'if', 'else', ':', '{', '}',
             '(', ')', 'ID', '||', '&&', '<', '>', '>=', '<=', '==', '!=', 'DIGITAL']
@@ -491,15 +544,15 @@ production = {
     'if_Sta_foo': [['else', '{', 'Exp', '}'], ['ε']]
 }
 
-# starter = 'AriExp'
+starter = 'AriExp'
 # starter = 'BooExp'
 # starter = 'Exp'
-starter = 'if_Sta'
+# starter = 'if_Sta'
 analyzer = Analyzer(starter, terminal, production)
 
 #测试算术运算
 # source_string = 'a * (b+test - (c % 3))'
-# source_string='b*(c-d+f*(g+h-i/j+k))'
+source_string='b*(c-d+f*(g+h-i/j+k))'
 # source_string = 'a'
 # source_string = 'a +/b'
 # source_string = '(a+b- c % a'
@@ -510,7 +563,7 @@ analyzer = Analyzer(starter, terminal, production)
 # source_string = '!a || (c + d)'
 # source_string = 'i=i&&i<i'
 #测试if语句
-source_string = 'if(a==b){c= c-b}else {a = a+1}'
+# source_string = 'if(a==b){c= c-b}else {a = a+1}'
 # source_string = 'ifa==b){c>c}'
 # source_string = 'if(a>a&& b||c){a+a}else'
 
